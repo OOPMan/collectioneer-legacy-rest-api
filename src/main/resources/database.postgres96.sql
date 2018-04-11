@@ -1,3 +1,4 @@
+-- we don't know how to generate database collectioneer (class Database) :(
 create table category
 (
   id        serial not null
@@ -94,37 +95,38 @@ create table collection_parent_collection_assn
 
 create table tag
 (
-  name        text not null
+  id          serial not null
     constraint tag_pkey
     primary key,
   category_id integer
     constraint tag_category_id_fk
     references category,
+  name        text   not null,
   data        text
 );
 
 create table tag_collection_assn
 (
-  tag_name      text    not null
-    constraint tag_collection_assn_tag_name_fk
+  tag_id        integer not null
+    constraint tag_collection_assn_tag_id_fk
     references tag,
   collection_id integer not null
     constraint tag_collection_assn_collection_id_fk
     references collection,
-  constraint tag_collection_assn_tag_name_collection_id_pk
-  primary key (tag_name, collection_id)
+  constraint tag_collection_assn_tag_id_collection_id_pk
+  primary key (tag_id, collection_id)
 );
 
 create table tag_item_assn
 (
-  tag_name text    not null
-    constraint tag_item_assn_tag_name_fk
+  tag_id  integer not null
+    constraint tag_item_assn_tag_id_fk
     references tag,
-  item_id  integer not null
+  item_id integer not null
     constraint tag_item_assn_item_id_fk
     references item,
-  constraint tag_item_assn_tag_name_item_id_pk
-  primary key (tag_name, item_id)
+  constraint tag_item_assn_tag_id_item_id_pk
+  primary key (tag_id, item_id)
 );
 
 

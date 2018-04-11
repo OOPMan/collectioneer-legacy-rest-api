@@ -1,7 +1,6 @@
 create table CATEGORY
 (
-  ID        INTEGER default (NEXT VALUE FOR PUBLIC.SYSTEM_SEQUENCE_CFF10AEB_6B7F_4006_AF34_D69CFF4C4C6A)
-    primary key,
+  ID        INTEGER AUTO_INCREMENT primary key,
   PARENT_ID INTEGER
     constraint CATEGORY_CATEGORY_ID_FK
     references CATEGORY,
@@ -10,13 +9,12 @@ create table CATEGORY
 
 create table COLLECTION
 (
-  ID                INTEGER default (NEXT VALUE FOR PUBLIC.SYSTEM_SEQUENCE_70839B98_1CB0_48AD_BA42_F902010D431B)
-    primary key,
+  ID                INTEGER AUTO_INCREMENT primary key,
   NAME              VARCHAR(255),
   CATEGORY_ID       INTEGER default NULL
     constraint COLLECTION_CATEGORY_ID_FK
     references CATEGORY,
-  DESCRIPTION       CLOB    default 'NULL',
+  DESCRIPTION       CLOB,
   DATETIME_CREATED  TIMESTAMP WITH TIME ZONE(30, 10) default NOW() not null,
   DATETIME_MODIFIED TIMESTAMP WITH TIME ZONE(30, 10) default NOW() not null,
   DELETED           BOOLEAN default FALSE                          not null,
@@ -47,14 +45,13 @@ create table COLLECTION_PARENT_COLLECTION_ASSN
 
 create table ITEM
 (
-  ID                INTEGER      default (NEXT VALUE FOR PUBLIC.SYSTEM_SEQUENCE_BBD3D322_26C2_404E_AF73_85E74248ECF0)
-    primary key,
+  ID                INTEGER AUTO_INCREMENT primary key,
   NAME              VARCHAR(255)                                   not null,
   CATEGORY_ID       INTEGER      default NULL
     constraint ITEM_CATEGORY_ID_FK
     references CATEGORY,
-  VERSION           VARCHAR(255) default 'NULL',
-  DATA              CLOB         default 'NULL',
+  VERSION           VARCHAR(255),
+  DATA              CLOB,
   DATETIME_CREATED  TIMESTAMP WITH TIME ZONE(30, 10) default NOW() not null,
   DATETIME_MODIFIED TIMESTAMP WITH TIME ZONE(30, 10) default NOW() not null,
   DELETED           BOOLEAN default FALSE                          not null,
@@ -91,36 +88,36 @@ create index ITEM_VERSION_INDEX
 
 create table TAG
 (
-  NAME        VARCHAR(255) not null
-    primary key,
+  ID          INTEGER AUTO_INCREMENT PRIMARY KEY,
+  NAME        CLOB not null,
   CATEGORY_ID INTEGER default NULL
     constraint TAG_CATEGORY_ID_FK
     references CATEGORY,
-  DATA        CLOB    default 'NULL'
+  DATA        CLOB
 );
 
 create table TAG_COLLECTION_ASSN
 (
-  TAG_NAME      VARCHAR(255) not null
-    constraint TAG_COLLECTION_ASSN_TAG_NAME_FK
+  TAG_ID      INTEGER not null
+    constraint TAG_COLLECTION_ASSN_TAG_ID_FK
     references TAG,
   COLLECTION_ID INTEGER      not null
     constraint TAG_COLLECTION_ASSN_COLLECTION_ID_FK
     references COLLECTION,
-  constraint TAG_COLLECTION_ASSN_TAG_NAME_COLLECTION_ID_PK
-  primary key (TAG_NAME, COLLECTION_ID)
+  constraint TAG_COLLECTION_ASSN_TAG_ID_COLLECTION_ID_PK
+  primary key (TAG_ID, COLLECTION_ID)
 );
 
 create table TAG_ITEM_ASSN
 (
-  TAG_NAME VARCHAR(255) not null
-    constraint TAG_ITEM_ASSN_TAG_NAME_FK
+  TAG_ID INTEGER not null
+    constraint TAG_ITEM_ASSN_TAG_ID_FK
     references TAG,
   ITEM_ID  INTEGER      not null
     constraint TAG_ITEM_ASSN_ITEM_ID_FK
     references ITEM,
-  constraint TAG_ITEM_ASSN_TAG_NAME_ITEM_ID_PK
-  primary key (TAG_NAME, ITEM_ID)
+  constraint TAG_ITEM_ASSN_TAG_ID_ITEM_ID_PK
+  primary key (TAG_ID, ITEM_ID)
 );
 
 

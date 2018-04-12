@@ -15,8 +15,8 @@ create table COLLECTION
     constraint COLLECTION_CATEGORY_ID_FK
     references CATEGORY,
   DESCRIPTION       CLOB,
-  DATETIME_CREATED  TIMESTAMP WITH TIME ZONE(30, 10) default NOW() not null,
-  DATETIME_MODIFIED TIMESTAMP WITH TIME ZONE(30, 10) default NOW() not null,
+  DATETIME_CREATED  TIMESTAMP WITH TIME ZONE default NOW() not null,
+  DATETIME_MODIFIED TIMESTAMP WITH TIME ZONE default NOW() not null,
   DELETED           BOOLEAN default FALSE                          not null,
   ACTIVE            BOOLEAN default TRUE                           not null
 );
@@ -52,8 +52,8 @@ create table ITEM
     references CATEGORY,
   VERSION           VARCHAR(255),
   DATA              CLOB,
-  DATETIME_CREATED  TIMESTAMP WITH TIME ZONE(30, 10) default NOW() not null,
-  DATETIME_MODIFIED TIMESTAMP WITH TIME ZONE(30, 10) default NOW() not null,
+  DATETIME_CREATED  TIMESTAMP WITH TIME ZONE default NOW() not null,
+  DATETIME_MODIFIED TIMESTAMP WITH TIME ZONE default NOW() not null,
   DELETED           BOOLEAN default FALSE                          not null,
   ACTIVE            BOOLEAN default TRUE                           not null
 );

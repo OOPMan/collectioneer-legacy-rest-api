@@ -1,14 +1,20 @@
 package com.github.oopman.collectioneer.server.servlets
 
+import com.github.oopman.collectioneer.server.data.Models.Tag
 import com.github.oopman.collectioneer.server.data.TagObjects
 import io.getquill.NamingStrategy
 import io.getquill.context.jdbc.JdbcContext
 import io.getquill.context.sql.idiom.SqlIdiom
+import org.json4s._
 
 
-case class Tag(name: String,
-               categoryId: Option[Int]=None,
-               data: Option[String]=None)
+case class InsertTag(name: String,
+                     categoryId: Option[Int]=None,
+                     data: Option[String]=None)
+
+case class UpdateTag(name: Option[String],
+                     categoryId: Option[String],
+                     data: Option[String])
 
 /**
   * This servlet manages interactions with the Tag objects within the system
@@ -35,9 +41,35 @@ class TagsServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val ct
 
   post("/?") {
     contentType = formats("json")
-    val tag = parse(request.body).extract[Tag]
+    val tag = parse(request.body).extract[InsertTag]
     val tagId = tagObjects.insertTag(tag.name, tag.categoryId, tag.data)
     response.setStatus(201)
     tagId
+  }
+
+  patch("/:id") {
+    contentType = formats("json")
+    val id = params("id").toInt
+    val currentTag = tagObjects.getTag(id) match {
+      case Some(tag) => tag
+      case _ => halt(status=404, body="")
+    }
+    val json = parse(request.body)
+    val updateTag = json.extract[UpdateTag]
+    val name = updateTag.name.getOrElse(currentTag.name)
+    val categoryId = json \ "categoryId" match {
+      case JNothing => currentTag.categoryId
+      case JNull => None
+      case JLong(n) => Some(n.toInt)
+      case _ => halt(status=400, body="categoryId must be long or null")
+    }
+    val data = json \ "data" match {
+      case JNothing => currentTag.data
+      case JNull => None
+      case JString(s) => Some(s)
+      case _ => halt(status=400, body="data must be a string or null")
+    }
+    tagObjects.updateTag(Tag(id, name, categoryId, data))
+    response.setStatus(202)
   }
 }

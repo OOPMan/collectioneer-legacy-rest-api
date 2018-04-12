@@ -47,4 +47,14 @@ class TagObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val con
       _.data -> lift(data)
     ))
   }
+
+  /**
+    * Update a Tag object, returning its ID in the process
+    *
+    * @param tag A Tag instance
+    * @return
+    */
+  def updateTag(tag: Tag): Long = {
+    context.run(query[Tag].filter(_.id == lift(tag.id)).update(lift(tag)))
+  }
 }

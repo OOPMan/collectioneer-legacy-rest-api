@@ -14,11 +14,10 @@ class TagObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val con
     * @param name
     * @return
     */
-  def getTag(name: String): Option[Tag] = context.run(query[Tag].filter(_.name == lift(name))) match {
+  def getTag(id: Int): Option[Tag] = context.run(query[Tag].filter(_.id == lift(id))) match {
     case List(tag) => Some(tag)
     case Nil => None
   }
-
 
   /**
     * Retrieve a Sequence of Tags constrained by various input parameters
@@ -32,7 +31,7 @@ class TagObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val con
   }
 
   /**
-    * Insert a Tag object and return it
+    * Insert a Tag object and returns the ID of the newly created Tag
     *
     * @param name Name of the Tag. This is the primary key and thus must be unique within the dataset
     * @param categoryId Optional. ID of the Category to associate the Tag with
@@ -41,10 +40,11 @@ class TagObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val con
     */
   def insertTag(name: String,
                 categoryId: Option[Int]=None,
-                data: Option[String]=None): Tag = {
-    val tag = Tag(name=name, categoryId=categoryId, data=data)
-    context.run(query[Tag].insert(lift(tag)))
-    tag
+                data: Option[String]=None): Long = {
+    context.run(query[Tag].insert(
+      _.name -> lift(name),
+      _.categoryId -> lift(categoryId),
+      _.data -> lift(data)
+    ))
   }
-
 }

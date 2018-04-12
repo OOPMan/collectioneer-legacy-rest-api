@@ -5,6 +5,11 @@ import io.getquill.NamingStrategy
 import io.getquill.context.jdbc.JdbcContext
 import io.getquill.context.sql.idiom.SqlIdiom
 
+
+case class Tag(name: String,
+               categoryId: Option[Int]=None,
+               data: Option[String]=None)
+
 /**
   * This servlet manages interactions with the Tag objects within the system
   *
@@ -20,11 +25,19 @@ class TagsServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val ct
     tagObjects.getTags()
   }
 
-  get("/:name") {
+  get("/:id") {
     contentType = formats("json")
-    tagObjects.getTag(params("name")) match {
+    tagObjects.getTag(params("id").toInt) match {
       case Some(tag) => tag
       case None => halt(status=404, body="")
     }
+  }
+
+  post("/?") {
+    contentType = formats("json")
+    val tag = parse(request.body).extract[Tag]
+    val tagId = tagObjects.insertTag(tag.name, tag.categoryId, tag.data)
+    response.setStatus(201)
+    tagId
   }
 }

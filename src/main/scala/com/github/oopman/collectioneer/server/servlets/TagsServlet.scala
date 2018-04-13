@@ -72,4 +72,9 @@ class TagsServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val ct
     tagObjects.updateTag(Tag(id, name, categoryId, data))
     response.setStatus(202)
   }
+
+  delete("/:id") {
+    contentType = formats("json")
+    tagObjects.deleteTag(params("id").toInt)
+  }
 }

@@ -57,4 +57,15 @@ class TagObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val con
   def updateTag(tag: Tag): Long = {
     context.run(query[Tag].filter(_.id == lift(tag.id)).update(lift(tag)))
   }
+
+  /**
+    * Delete a Tag object. Will fail if any TagCollectionAssn or TagItemAssn
+    * objects associated with the Tag exists
+    *
+    * @param id ID of Tag to delete
+    * @return
+    */
+  def deleteTag(id: Int): Long = {
+    context.run(query[Tag].filter(_.id == lift(id)).delete)
+  }
 }

@@ -26,11 +26,17 @@ case class UpdateTag(name: Option[String],
 class TagsServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val ctx: JdbcContext[Dialect, Naming]) extends CollectioneerServlet(ctx) {
   val tagObjects = new TagObjects(ctx)
 
+  /**
+    * GET all Tags
+    */
   get("/?") {
     contentType = formats("json")
     tagObjects.getTags()
   }
 
+  /**
+    * Get a specific Tag
+    */
   get("/:id") {
     contentType = formats("json")
     tagObjects.getTag(params("id").toInt) match {
@@ -39,6 +45,9 @@ class TagsServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val ct
     }
   }
 
+  /**
+    * POST a new Tag
+    */
   post("/?") {
     contentType = formats("json")
     val tag = parse(request.body).extract[InsertTag]
@@ -47,6 +56,9 @@ class TagsServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val ct
     tagId
   }
 
+  /**
+    * PATCH an existing Tag
+    */
   patch("/:id") {
     contentType = formats("json")
     val id = params("id").toInt
@@ -73,6 +85,9 @@ class TagsServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val ct
     response.setStatus(202)
   }
 
+  /**
+    * DELETE an existing Tag
+    */
   delete("/:id") {
     contentType = formats("json")
     tagObjects.deleteTag(params("id").toInt)

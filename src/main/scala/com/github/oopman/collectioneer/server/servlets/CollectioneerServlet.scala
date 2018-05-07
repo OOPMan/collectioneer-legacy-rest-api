@@ -9,20 +9,4 @@ import org.scalatra.json._
 
 class CollectioneerServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](val ctx: JdbcContext[Dialect, Naming]) extends ScalatraServlet with NativeJsonSupport {
   protected implicit lazy val jsonFormats: Formats = DefaultFormats
-
-  get("/") {
-    views.html.hello()
-  }
-
-  get("/tags") {
-    contentType = formats("json")
-  }
-
-//  post("/tags") {
-//    val body = request.body
-//    val tagJSON = parse(body)
-//    val tag = tagJSON.extract[Tag]
-//    dao.run(query[Tag].insert(lift(tag)))
-//    response.setStatus(201)
-//  }
 }

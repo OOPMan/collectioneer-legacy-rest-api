@@ -26,8 +26,18 @@ class TagObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val con
     * @param limit Number of Tags to retrieve
     * @return A Sequence of Tags
     */
-  def getTags(offset: Int=defaultOffset, limit: Int=defaultLimit): Seq[Tag] = {
-    context.run(query[Tag].drop(lift(offset)).take(lift(limit)))
+  def getTags(categoryId: Option[Option[Int]]=None,
+              offset: Int=defaultOffset,
+              limit: Int=defaultLimit): Seq[Tag] = {
+    val tagsQuery = quote {
+      query[Tag].drop(lift(offset)).take(lift(limit))
+    }
+    context.run(categoryId match {
+      case Some(optionalCategoryId) => quote {
+        tagsQuery.filter(_.categoryId == lift(optionalCategoryId))
+      }
+      case None => tagsQuery
+    })
   }
 
   /**

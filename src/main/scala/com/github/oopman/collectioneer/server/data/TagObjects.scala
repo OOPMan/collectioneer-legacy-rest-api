@@ -33,12 +33,18 @@ class TagObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val con
     val tagsQuery = quote {
       query[Tag].drop(lift(offset)).take(lift(limit))
     }
-    context.run(categoryId match {
-      case Some(optionalCategoryId) => quote {
-        tagsQuery.filter(_.categoryId == lift(optionalCategoryId))
+    val finalTagsQuery = categoryId match {
+      case Some(optionalCategoryId) => optionalCategoryId match {
+        case Some(actualCategoryId) => quote {
+          tagsQuery.filter(_.categoryId.contains(lift(actualCategoryId)))
+        }
+        case None => quote {
+          tagsQuery.filter(_.categoryId.isEmpty)
+        }
       }
       case None => tagsQuery
-    })
+    }
+    context.run(finalTagsQuery)
   }
 
   /**

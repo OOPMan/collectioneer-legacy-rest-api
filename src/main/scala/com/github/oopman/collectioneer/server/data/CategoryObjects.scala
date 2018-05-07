@@ -34,12 +34,18 @@ class CategoryObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override va
     val categoriesQuery = quote {
       query[Category].drop(lift(offset)).take(lift(limit))
     }
-    context.run(parentId match {
-      case Some(optionalParentId) => quote {
-        categoriesQuery.filter(_.parentId == optionalParentId)
+    val finalCategoriesQuery = parentId match {
+      case Some(optionalParentId) => optionalParentId match {
+        case Some(actualParentId) => quote {
+          categoriesQuery.filter(_.parentId.contains(lift(actualParentId)))
+        }
+        case None => quote {
+          categoriesQuery.filter(_.parentId.isEmpty)
+        }
       }
       case None => categoriesQuery
-    })
+    }
+    context.run(finalCategoriesQuery)
   }
 
   /**

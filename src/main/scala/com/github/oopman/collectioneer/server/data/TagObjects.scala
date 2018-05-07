@@ -1,5 +1,6 @@
 package com.github.oopman.collectioneer.server.data
 
+import com.github.oopman.collectioneer.server.Config
 import com.github.oopman.collectioneer.server.data.Models.Tag
 import io.getquill.NamingStrategy
 import io.getquill.context.jdbc.JdbcContext
@@ -27,8 +28,8 @@ class TagObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val con
     * @return A Sequence of Tags
     */
   def getTags(categoryId: Option[Option[Int]]=None,
-              offset: Int=defaultOffset,
-              limit: Int=defaultLimit): Seq[Tag] = {
+              offset: Int=Config.defaultOffset,
+              limit: Int=Config.defaultLimit): Seq[Tag] = {
     val tagsQuery = quote {
       query[Tag].drop(lift(offset)).take(lift(limit))
     }

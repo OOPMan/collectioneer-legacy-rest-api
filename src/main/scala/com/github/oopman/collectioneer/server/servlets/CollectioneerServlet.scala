@@ -12,32 +12,19 @@ class CollectioneerServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](val ct
   protected implicit lazy val jsonFormats: Formats = DefaultFormats
 
   /**
-    * Extract an optional nullable String parameter
+    * Extract an optional nullable typed parameter from parameters
     *
     * @param param Parameter key
+    * @param transformer A callable that can transform a string to the expected type T
     * @return A value that indicates whether the parameter was omitted, "null" or another String
     */
-  def extractOptionalNullableParameter(param: String): Option[Option[String]] = {
+  def extractOptionalNullableParameter[T](param: String, transformer: String => T): Option[Option[T]] = {
     params.get(param) match {
       case Some(potentialStringOrNull) =>
         Some(potentialStringOrNull.trim.toLowerCase match {
           case "null" => None
-          case potentialString => Some(potentialString)
+          case string => Some(transformer(string))
         })
-      case None => None
-    }
-  }
-
-  /**
-    * Extract an optional nullable Int parameter
-    *
-    * @param param Parameter key
-    * @return A value that indicates whether the parameter was omitted, "null" or an Int
-    */
-  def extractOptionalNullableIntParameter(param: String): Option[Option[Int]] = {
-    extractOptionalNullableParameter(param) match {
-      case Some(Some(value)) => Some(Some(value.toInt))
-      case Some(None) => Some(None)
       case None => None
     }
   }

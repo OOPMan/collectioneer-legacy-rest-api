@@ -19,7 +19,7 @@ class CategoriesServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](override 
     */
   get("/?") {
     contentType = formats("json")
-    val parentId = extractOptionalNullableParameter("categoryId", _.toInt)
+    val parentId = transformParams("categoryId", _.toInt)
     val (limit, offset) = extractLimitAndOffset
     categoryObjects.getCategories(parentId, offset, limit)
   }

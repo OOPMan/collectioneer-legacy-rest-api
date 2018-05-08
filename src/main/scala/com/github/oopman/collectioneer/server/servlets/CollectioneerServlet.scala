@@ -18,7 +18,7 @@ class CollectioneerServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](val ct
     * @param transformer A callable that can transform a string to the expected type T
     * @return A value that indicates whether the parameter was omitted, "null" or another String
     */
-  def extractOptionalNullableParameter[T](param: String, transformer: String => T): Option[Option[T]] = {
+  def transformParams[T](param: String, transformer: String => T): Option[Option[T]] = {
     params.get(param) match {
       case Some(potentialStringOrNull) =>
         Some(potentialStringOrNull.trim.toLowerCase match {

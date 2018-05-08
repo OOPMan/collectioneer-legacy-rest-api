@@ -32,7 +32,7 @@ class TagsServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val ct
     */
   get("/?") {
     contentType = formats("json")
-    val categoryId = extractOptionalNullableParameter("categoryId", _.toInt)
+    val categoryId = transformParams("categoryId", _.toInt)
     val (limit, offset) = extractLimitAndOffset
     tagObjects.getTags(categoryId, offset, limit)
   }

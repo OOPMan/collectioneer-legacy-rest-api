@@ -1,6 +1,5 @@
 package com.github.oopman.collectioneer.server.servlets
 
-import com.github.oopman.collectioneer.server.Config
 import com.github.oopman.collectioneer.server.data.Models.Tag
 import com.github.oopman.collectioneer.server.data.TagObjects
 import io.getquill.NamingStrategy
@@ -28,7 +27,7 @@ class TagsServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val ct
   val tagObjects = new TagObjects(ctx)
 
   /**
-    * GET all Tags
+    * GET Tags
     *
     */
   get("/?") {
@@ -40,14 +39,7 @@ class TagsServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val ct
       })
       case None => None
     }
-    val limit = params.get("limit") match {
-      case None => Config.defaultLimit
-      case Some(potentialLimit) => potentialLimit.toInt
-    }
-    val offset = params.get("offset") match {
-      case None => Config.defaultOffset
-      case Some(potentialOffset) => potentialOffset.toInt
-    }
+    val (limit, offset) = extractLimitAndOffset(params)
     tagObjects.getTags(categoryId, offset, limit)
   }
 

@@ -1,5 +1,6 @@
 package com.github.oopman.collectioneer.server.servlets
 
+import com.github.oopman.collectioneer.server.data.CategoryObjects
 import io.getquill.NamingStrategy
 import io.getquill.context.jdbc.JdbcContext
 import io.getquill.context.sql.idiom.SqlIdiom
@@ -11,5 +12,22 @@ import io.getquill.context.sql.idiom.SqlIdiom
   * @tparam Naming
   */
 class CategoriesServlet[Dialect <: SqlIdiom, Naming <: NamingStrategy](override val ctx: JdbcContext[Dialect, Naming]) extends CollectioneerServlet(ctx) {
+  val categoryObjects = new CategoryObjects(ctx)
+
+  /**
+    * GET Categories
+    */
+  get("/?") {
+    contentType = formats("json")
+    val parentId = params.get("categoryId") match {
+      case Some(potentialParentIdOrNull) => Some(potentialParentIdOrNull.toLowerCase match {
+        case "null" => None
+        case potentialParentId => Some(potentialParentId.toInt)
+      })
+      case None => None
+    }
+    val (limit, offset) = extractLimitAndOffset(params)
+    categoryObjects.getCategories(parentId, offset, limit)
+  }
 
 }

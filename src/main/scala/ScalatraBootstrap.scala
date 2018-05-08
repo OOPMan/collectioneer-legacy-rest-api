@@ -1,6 +1,6 @@
 
 import com.github.oopman.collectioneer.server._
-import com.github.oopman.collectioneer.server.servlets.{CollectioneerServlet, TagsServlet}
+import com.github.oopman.collectioneer.server.servlets.{CategoriesServlet, CollectioneerServlet, TagsServlet}
 import io.getquill._
 import org.scalatra._
 import javax.servlet.ServletContext
@@ -13,5 +13,6 @@ class ScalatraBootstrap extends LifeCycle {
 
   override def init(context: ServletContext) {
     context.mount(new TagsServlet(quillContext), "/tags")
+    context.mount(new CategoriesServlet(quillContext), "/categories")
   }
 }

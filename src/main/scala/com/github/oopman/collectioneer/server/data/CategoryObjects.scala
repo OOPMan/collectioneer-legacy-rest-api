@@ -12,7 +12,7 @@ class CategoryObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override va
   /**
     * Retrieve a Category object by id
     *
-    * @param id
+    * @param id ID of Category to retrieve
     * @return
     */
   def getCategory(id: Int): Option[Category] = context.run(query[Category].filter(_.id == lift(id))) match {
@@ -63,7 +63,23 @@ class CategoryObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override va
     ))
   }
 
-  def updateCategory(category: Category): Long = ???
+  /**
+    * Update a Category object, returning its ID in the process
+    * @param category A Category instance
+    * @return
+    */
+  def updateCategory(category: Category): Long = {
+    context.run(query[Category].filter(_.id == lift(category.id)).update(lift(category)))
+  }
 
-  def deleteCategory(id: Int): Long = ???
+  /**
+    * Delete a Category object. Will fail if any Tag, Item or Collection objects
+    * associated with the Category exist
+    *
+    * @param id ID of Category to delete
+    * @return
+    */
+  def deleteCategory(id: Int): Long = {
+    context.run(query[Category].filter(_.id == lift(id)).delete)
+  }
 }

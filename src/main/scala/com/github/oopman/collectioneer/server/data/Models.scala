@@ -14,20 +14,20 @@ object Models {
                         name: String,
                         categoryId: Option[Int],
                         description: Option[String],
-                        datetimeCreated: Option[Instant]=None,
-                        datetimeModified: Option[Instant]=None,
-                        deleted: Option[Boolean]=Some(false),
-                        active: Option[Boolean]=Some(true))
+                        datetimeCreated: Instant,
+                        datetimeModified: Instant,
+                        deleted: Boolean=false,
+                        active: Boolean=true)
 
   case class Item(id: Int,
                   name: String,
                   categoryId: Option[Int],
                   version: Option[String],
                   data: Option[String],
-                  datetimeCreated: Option[Instant]=None,
-                  datetimeModified: Option[Instant]=None,
-                  deleted: Option[Boolean]=Some(false),
-                  active: Option[Boolean]=Some(true))
+                  datetimeCreated: Instant,
+                  datetimeModified: Instant,
+                  deleted: Boolean=false,
+                  active: Boolean=true)
 
   case class CollectionItemAssn(collectionId: Int,
                                 itemId: Int,

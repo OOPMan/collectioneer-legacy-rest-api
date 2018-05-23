@@ -1,6 +1,6 @@
 package com.github.oopman.collectioneer.server.data
 
-import java.time.Instant
+import java.time.LocalDateTime
 
 /**
   * This object defines the model classes used with Quill
@@ -14,8 +14,8 @@ object Models {
                         name: String,
                         categoryId: Option[Int],
                         description: Option[String],
-                        datetimeCreated: Instant,
-                        datetimeModified: Instant,
+                        datetimeCreated: LocalDateTime,
+                        datetimeModified: LocalDateTime,
                         deleted: Boolean=false,
                         active: Boolean=true)
 
@@ -24,8 +24,8 @@ object Models {
                   categoryId: Option[Int],
                   version: Option[String],
                   data: Option[String],
-                  datetimeCreated: Instant,
-                  datetimeModified: Instant,
+                  datetimeCreated: LocalDateTime,
+                  datetimeModified: LocalDateTime,
                   deleted: Boolean=false,
                   active: Boolean=true)
 

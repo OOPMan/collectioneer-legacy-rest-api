@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3" % "runtime",
   "org.eclipse.jetty" % "jetty-webapp" % "9.4.8.v20171121" % "container",
   "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
-  "io.getquill" %% "quill" % "2.3.3",
+  "io.getquill" %% "quill" % "2.5.4",
   "com.h2database" % "h2" % "1.4.197",
   "org.postgresql" % "postgresql" % "9.4.1208",
   "com.lihaoyi" % "ammonite" % "1.1.0" % "test" cross CrossVersion.full

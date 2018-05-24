@@ -28,8 +28,8 @@ class CollectionObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override 
     * @param deleted
     * @param datetimeCreatedAfter
     * @param datetimeCreatedBefore
-    * @param dateTimeModifiedAfter
-    * @param dateTimeModifiedBefore
+    * @param datetimeModifiedAfter
+    * @param datetimeModifiedBefore
     * @param offset
     * @param limit
     * @return
@@ -39,43 +39,39 @@ class CollectionObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override 
                      deleted: Option[Boolean]=None,
                      datetimeCreatedAfter: Option[LocalDateTime]=None,
                      datetimeCreatedBefore: Option[LocalDateTime]=None,
-                     dateTimeModifiedAfter: Option[LocalDateTime]=None,
-                     dateTimeModifiedBefore: Option[LocalDateTime]=None,
+                     datetimeModifiedAfter: Option[LocalDateTime]=None,
+                     datetimeModifiedBefore: Option[LocalDateTime]=None,
                      offset: Int=Config.defaultOffset,
                      limit: Int=Config.defaultLimit): Seq[Collection] = {
-    val baseQuery = quote {
-      query[Collection].drop(lift(offset)).take(lift(limit))
-    }
-    val filterQueryA = categoryId match {
-      case Some(Some(categoryIdValue)) => quote { baseQuery.filter(_.categoryId.contains(lift(categoryIdValue))) }
-      case Some(None) => quote { baseQuery.filter(_.categoryId.isEmpty) }
-      case None => baseQuery
-    }
-    val filteredQueryB = active match {
-      case Some(activeValue) => quote { filterQueryA.filter(_.active == lift(activeValue)) }
-      case None => filterQueryA
-    }
-    val filteredQueryC = deleted match {
-      case Some(deletedValue) => quote { filteredQueryB.filter(_.deleted == lift(deletedValue)) }
-      case None => filteredQueryB
-    }
-    val filteredQueryD = datetimeCreatedAfter match {
-      case Some(datetimeCreatedValue) => quote { filteredQueryC.filter(_.datetimeCreated >= lift(datetimeCreatedValue)) }
-      case None => filteredQueryC
-    }
-    val filteredQueryE = datetimeCreatedBefore match {
-      case Some(datetimeCreatedValue) => quote { filteredQueryD.filter(_.datetimeCreated <= lift(datetimeCreatedValue)) }
-      case None => filteredQueryD
-    }
-    val filteredQueryF = dateTimeModifiedAfter match {
-      case Some(datetimeModifiedValue) => quote { filteredQueryE.filter(_.datetimeModified >= lift(datetimeModifiedValue)) }
-      case None => filteredQueryE
-    }
-    val filteredQueryG = dateTimeModifiedAfter match {
-      case Some(datetimeModifiedValue) => quote { filteredQueryF.filter(_.datetimeModified <= lift(datetimeModifiedValue)) }
-      case None => filteredQueryF
-    }
-    context.run(filteredQueryG)
+    val collectionsQuery: Quoted[Query[Collection]] = QueryBuilder {
+        quote(query[Collection]).drop(lift(offset)).take(lift(limit))
+      }
+      .ifInnerDefined(categoryId) {
+        (query: Query[Collection], categoryId: Int) => query.filter(_.categoryId.contains(categoryId))
+      }
+      .ifInnerEmpty(categoryId) {
+        query: Query[Collection] => query.filter(_.categoryId.isEmpty)
+      }
+      .ifDefined(active) {
+        (query: Query[Collection], active: Boolean) => query.filter(_.active == active)
+      }
+      .ifDefined(deleted) {
+        (query: Query[Collection], deleted: Boolean) => query.filter(_.deleted == deleted)
+      }
+      .ifDefined(datetimeCreatedAfter) {
+        (query: Query[Collection], dateTimeCreatedBefore: LocalDateTime) => query.filter(_.datetimeCreated >= dateTimeCreatedBefore)
+      }
+      .ifDefined(datetimeCreatedBefore) {
+        (query: Query[Collection], datetimeCreatedBefore: LocalDateTime) => query.filter(_.datetimeCreated <= datetimeCreatedBefore)
+      }
+      .ifDefined(datetimeModifiedAfter) {
+        (query: Query[Collection], datetimeModifiedAfter: LocalDateTime) => query.filter(_.datetimeModified >= datetimeModifiedAfter)
+      }
+      .ifDefined(datetimeModifiedBefore) {
+        (query: Query[Collection], datetimeModifiedBefore: LocalDateTime) => query.filter(_.datetimeModified <= datetimeModifiedBefore)
+      }
+      .build
+    context.run(collectionsQuery)
   }
 
   /**

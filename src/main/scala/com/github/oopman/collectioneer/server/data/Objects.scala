@@ -29,8 +29,8 @@ class Objects[Dialect <: SqlIdiom, Naming <: NamingStrategy](val context: JdbcCo
 
   case class QueryBuilder[T](quillQuery: QuotedQuery[T]) {
 
-    def ifDefined[U: Encoder](value: Option[U])
-                             (f: QuotedQueryTransformWithValue[T, U]): QueryBuilder[T] = {
+    def transformIfDefined[U: Encoder](value: Option[U])
+                                      (f: QuotedQueryTransformWithValue[T, U]): QueryBuilder[T] = {
       value match {
         case None => this
         case Some(v) => QueryBuilder {
@@ -41,30 +41,25 @@ class Objects[Dialect <: SqlIdiom, Naming <: NamingStrategy](val context: JdbcCo
       }
     }
 
-    def ifEmpty[U: Encoder](value: Option[U])
-                           (f: QuotedQueryTransform[T]): QueryBuilder[T] = {
+    def transformIfEmpty[U: Encoder](value: Option[U])
+                                    (f: QuotedQueryTransform[T]): QueryBuilder[T] = {
       value match {
         case Some(_) => this
         case None => QueryBuilder(quote(f(quillQuery)))
       }
     }
 
-    def ifInnerDefined[U: Encoder](value: NullOption[U])
-                                  (f: QuotedQueryTransformWithValue[T, U]): QueryBuilder[T] = {
+    def descendIfDefined[U: Encoder](value: Option[U])
+                                    (f: (QueryBuilder[T], U) => QueryBuilder[T]): QueryBuilder[T] = {
       value match {
-        case Some(Some(v)) => QueryBuilder {
-          quote {
-            f(quillQuery, lift(v))
-          }
-        }
-        case _ => this
+        case None => this
+        case Some(v) => f(this, v)
       }
     }
-
-    def ifInnerEmpty[U: Encoder](value: NullOption[U])
-                                (f: QuotedQueryTransform[T]): QueryBuilder[T] = {
+    def descendIfEmpty[U: Encoder](value: Option[U])
+                                  (f: QueryBuilder[T] => QueryBuilder[T]): QueryBuilder[T] = {
       value match {
-        case Some(None) => QueryBuilder(quote(f(quillQuery)))
+        case None => f(this)
         case _ => this
       }
     }

@@ -46,28 +46,32 @@ class CollectionObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override 
     val collectionsQuery: Quoted[Query[Collection]] = QueryBuilder {
         quote(query[Collection]).drop(lift(offset)).take(lift(limit))
       }
-      .ifInnerDefined(categoryId) {
-        (query: Query[Collection], categoryId: Int) => query.filter(_.categoryId.contains(categoryId))
+      .descendIfDefined(categoryId) {
+        (queryBuilder: QueryBuilder[Collection], categoryId: Option[Int]) =>
+          queryBuilder
+          .transformIfDefined(categoryId) {
+            (query: Query[Collection], categoryId: Int) => query.filter(_.categoryId.contains(categoryId))
+          }
+          .transformIfEmpty(categoryId) {
+            query: Query[Collection] => query.filter(_.categoryId.isEmpty)
+          }
       }
-      .ifInnerEmpty(categoryId) {
-        query: Query[Collection] => query.filter(_.categoryId.isEmpty)
-      }
-      .ifDefined(active) {
+      .transformIfDefined(active) {
         (query: Query[Collection], active: Boolean) => query.filter(_.active == active)
       }
-      .ifDefined(deleted) {
+      .transformIfDefined(deleted) {
         (query: Query[Collection], deleted: Boolean) => query.filter(_.deleted == deleted)
       }
-      .ifDefined(datetimeCreatedAfter) {
+      .transformIfDefined(datetimeCreatedAfter) {
         (query: Query[Collection], dateTimeCreatedBefore: LocalDateTime) => query.filter(_.datetimeCreated >= dateTimeCreatedBefore)
       }
-      .ifDefined(datetimeCreatedBefore) {
+      .transformIfDefined(datetimeCreatedBefore) {
         (query: Query[Collection], datetimeCreatedBefore: LocalDateTime) => query.filter(_.datetimeCreated <= datetimeCreatedBefore)
       }
-      .ifDefined(datetimeModifiedAfter) {
+      .transformIfDefined(datetimeModifiedAfter) {
         (query: Query[Collection], datetimeModifiedAfter: LocalDateTime) => query.filter(_.datetimeModified >= datetimeModifiedAfter)
       }
-      .ifDefined(datetimeModifiedBefore) {
+      .transformIfDefined(datetimeModifiedBefore) {
         (query: Query[Collection], datetimeModifiedBefore: LocalDateTime) => query.filter(_.datetimeModified <= datetimeModifiedBefore)
       }
       .build

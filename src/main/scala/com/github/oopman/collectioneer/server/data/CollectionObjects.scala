@@ -87,19 +87,31 @@ class CollectionObjects[Dialect <: SqlIdiom, Naming <: NamingStrategy](override 
     */
   def insertCollection(name: String,
                        categoryId: Option[Int],
-                       description: Option[String]): Long = ???
+                       description: Option[String]): Long = {
+    context.run(query[Collection].insert(
+      _.name -> lift(name),
+      _.categoryId -> lift(categoryId),
+      _.description -> lift(description),
+      _.datetimeCreated -> lift(LocalDateTime.now),
+      _.datetimeModified -> lift(LocalDateTime.now)
+    ))
+  }
 
   /**
     *
     * @param collection
     * @return
     */
-  def updateCollection(collection: Collection): Long = ???
+  def updateCollection(collection: Collection): Long = {
+    context.run(query[Collection].filter(_.id == lift(collection.id)).update(lift(collection)))
+  }
 
   /**
     *
     * @param id
     * @return
     */
-  def deleteCollection(id: Int): Long = ???
+  def deleteCollection(id: Int): Long = {
+    context.run(query[Collection].filter(_.id == lift(id)).delete)
+  }
 }
